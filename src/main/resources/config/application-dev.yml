@@ -63,12 +63,18 @@ spring:
   devtools:
     restart:
       enabled: true
+  # 模板输出
   thymeleaf:
     prefix: classpath:/templates/
     suffix: .html
+    cache: false
+    content-type: text/html
+    enabled: true
+    encoding: UTF-8
+    mode: HTML5
 
 mybatis-plus:
-  mapper-locations: classpath:/vip/proyi/miaosha/mapper/*Mapper.xml
+  mapper-locations: classpath:/vip/proyi/miaosha/mapper/xml/*Mapper.xml
   typeAliasesPackage: vip.proyi.miaosha.entity
   # mybatis-plus全局设置
   #global-config:

@@ -1,12 +1,8 @@
-package vip.proyi.miaosha.config;
+package vip.proyi.miaosha.base;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
-import vip.proyi.miaosha.base.ResponseCode;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.Serializable;
 
 /**
@@ -70,14 +66,14 @@ public class ResponseModel<T> implements Serializable {
     }
 
     public static <T> ResponseModel<T> createBySuccess() {
-        return new ResponseModel<T>(ResponseCode.SUCCESS.getCode());
+        return new ResponseModel<T>(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getDesc());
     }
 
     public static <T> ResponseModel<T> createBySuccessMessage(String msg) {
         return new ResponseModel<T>(ResponseCode.SUCCESS.getCode(), msg);
     }
     public static <T> ResponseModel<T> createBySuccess(T data) {
-        return new ResponseModel<T>(ResponseCode.SUCCESS.getCode(), data);
+        return new ResponseModel<T>(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getDesc(), data);
     }
 
     public static <T> ResponseModel<T> createBySuccess(String msg, T data) {
