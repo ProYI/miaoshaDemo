@@ -63,6 +63,9 @@ spring:
   devtools:
     restart:
       enabled: true
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
 
 mybatis-plus:
   mapper-locations: classpath:/vip/proyi/miaosha/mapper/*Mapper.xml
@@ -82,7 +85,7 @@ logging:
       proyi:
         mapper: debug
   path: logs/
-  file: demo.log
+  file: miaosha.log
 
 controller:
   scanPackage: vip.proyi.miaosha
