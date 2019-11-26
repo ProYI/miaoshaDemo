@@ -22,9 +22,8 @@ public class RedisUtil {
      */
     public <T> boolean setObj(KeyPrefix prefix, String key, T value) {
         String realKey = prefix.getPrefix() + ":" + key;
-        String str = beanToString(value);
         int seconds = prefix.expireSeconds();
-        set(realKey, str, seconds);
+        set(realKey, value, seconds);
         return true;
     }
 
@@ -33,8 +32,8 @@ public class RedisUtil {
      */
     public <T> T getObj(KeyPrefix prefix, String key,  Class<T> clazz) {
         String realKey = prefix.getPrefix() + ":" +key;
-        String str = get(realKey).toString();
-        T t = strToBean(str, clazz);
+        Object obj = get(realKey);
+        T t = objToBean(obj, clazz);
         return t;
     }
 
@@ -61,36 +60,11 @@ public class RedisUtil {
         return decr(realKey, 1);
     }
 
-    private <T> T strToBean(String str, Class<T> clazz) {
-        if (StringUtils.isEmpty(str) || clazz == null) {
+    private <T> T objToBean(Object obj, Class<T> clazz) {
+        if (obj == null || clazz == null) {
             return null;
         }
-        if (clazz == int.class || clazz == Integer.class) {
-            return (T) Integer.valueOf(str);
-        }else if (clazz == String.class) {
-            return (T) str;
-        }else if (clazz == long.class || clazz == Long.class) {
-            return  (T) Long.valueOf(str);
-        }else {
-            return JSON.toJavaObject(JSON.parseObject(str), clazz);
-        }
-    }
-
-    private <T> String beanToString(T value) {
-        if (value == null) {
-            return null;
-        }
-
-        Class<?> clazz = value.getClass();
-        if(clazz == int.class || clazz == Integer.class) {
-            return ""+value;
-        }else if(clazz == String.class) {
-            return (String)value;
-        }else if(clazz == long.class || clazz == Long.class) {
-            return ""+value;
-        }else {
-            return JSON.toJSONString(value);
-        }
+        return (T) obj;
     }
 
     //=============================common============================
