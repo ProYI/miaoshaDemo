@@ -76,8 +76,8 @@ public class GlobleExceptionHandler {
     @ResponseStatus(HttpStatus.OK)
     @ExceptionHandler(value = ServiceException.class)
     public ResponseModel<String> handler(ServiceException e) {
-        log.error("业务异常：", e);
-        return ResponseModel.createByFAILEDCodeMessage(e.getResult().getCode(), e.getResult().getMessage());
+        log.error("业务异常：{}", e.getMsg());
+        return ResponseModel.createByFAILEDCodeMessage(e.getCode(), e.getMsg());
     }
 
     /**

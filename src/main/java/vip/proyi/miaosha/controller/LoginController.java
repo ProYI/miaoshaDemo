@@ -7,9 +7,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import vip.proyi.miaosha.base.ResponseModel;
-import vip.proyi.miaosha.utils.RedisUtil;
+import vip.proyi.miaosha.service.IMiaoShaUserService;
 import vip.proyi.miaosha.vo.LoginVo;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 @Controller
@@ -17,7 +18,7 @@ import javax.validation.Valid;
 @Slf4j
 public class LoginController {
     @Autowired
-    RedisUtil redisUtil;
+    IMiaoShaUserService userService;
 
     @RequestMapping("/to_login")
     public String toLogin() {
@@ -26,8 +27,8 @@ public class LoginController {
 
     @PostMapping("/do_login")
     @ResponseBody
-    public ResponseModel<Boolean> doLogin(@Valid LoginVo loginVo) {
-        log.info(loginVo.toString());
+    public ResponseModel<Boolean> doLogin(HttpServletResponse response, @Valid LoginVo loginVo) {
+        userService.login(response, loginVo);
         return null;
     }
 }

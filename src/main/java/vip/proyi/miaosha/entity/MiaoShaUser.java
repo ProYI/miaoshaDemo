@@ -15,8 +15,11 @@ public class MiaoShaUser extends Model<MiaoShaUser> {
     @TableId(value = "id", type = IdType.ID_WORKER)
     private Long id;
 
+    @TableField("loginname")
+    private String loginName;
+
     @TableField("nickname")
-    private String nickname;
+    private String nickName;
 
     @TableField("password")
     private String password;
