@@ -8,4 +8,6 @@ import javax.servlet.http.HttpServletResponse;
 
 public interface IMiaoShaUserService extends IService<MiaoShaUser> {
     boolean login(HttpServletResponse response, LoginVo loginVo);
+
+    MiaoShaUser getByToken(HttpServletResponse response, String token);
 }

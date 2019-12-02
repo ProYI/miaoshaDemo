@@ -61,6 +61,21 @@ public class MiaoShaUserServiceImpl extends ServiceImpl<IMiaoShaUserMapper, Miao
         return true;
     }
 
+    @Override
+    public MiaoShaUser getByToken(HttpServletResponse response, String token) {
+        if (StringUtils.isEmpty(token)) {
+            return null;
+        }
+
+        MiaoShaUser user = redisUtil.getObj(MiaoShaUserKey.token, token, MiaoShaUser.class);
+
+        // 更新session有效时间
+        if (null != user) {
+            addCookie(response, token, user);
+        }
+        return user;
+    }
+
     private void addCookie(HttpServletResponse response, String token, MiaoShaUser user) {
         redisUtil.setObj(MiaoShaUserKey.token, token, user);
         Cookie cookie = new Cookie(COOKI_NAME_TOKEN, token);

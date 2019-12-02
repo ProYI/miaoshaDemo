@@ -29,6 +29,6 @@ public class LoginController {
     @ResponseBody
     public ResponseModel<Boolean> doLogin(HttpServletResponse response, @Valid LoginVo loginVo) {
         userService.login(response, loginVo);
-        return null;
+        return ResponseModel.createBySuccess(true);
     }
 }
