@@ -19,6 +19,10 @@ public enum ResponseCode {
     MOBILE_ERROR(500213, "手机号码格式错误"),
     MOBILE_NOT_EXIST(500214, "手机号码不存在"),
     PASSWORD_ERROR(500215, "账户或密码错误"),
+
+    // 秒杀相关
+    MIAOSHA_STOCK_OVER(500300, "该商品已售罄"),
+    MIAOSHA_NO_REPEATE(500301, "不能重复秒杀"),
     ;
 
     private final int code;
