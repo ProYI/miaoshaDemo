@@ -15,7 +15,6 @@ import vip.proyi.miaosha.service.impl.MiaoShaUserServiceImpl;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Arrays;
 
 @Service
 public class UserArgumentResolver implements HandlerMethodArgumentResolver {
@@ -47,6 +46,9 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
 
     private String getCookieValue(HttpServletRequest request, String cookieName) {
         Cookie[] cookies = request.getCookies();
+        if (null == cookies || cookies.length<=0) {
+            return null;
+        }
         for (Cookie cookie: cookies) {
             if (cookie.getName().equals(cookieName)) {
                 return cookie.getValue();
