@@ -10,11 +10,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.thymeleaf.context.WebContext;
 import org.thymeleaf.spring5.view.ThymeleafViewResolver;
+import vip.proyi.miaosha.base.ResponseModel;
 import vip.proyi.miaosha.comment.GoodsKey;
 import vip.proyi.miaosha.entity.MiaoShaUser;
 import vip.proyi.miaosha.service.IGoodsService;
 import vip.proyi.miaosha.service.IMiaoShaUserService;
 import vip.proyi.miaosha.utils.RedisUtil;
+import vip.proyi.miaosha.vo.GoodsDetailVo;
 import vip.proyi.miaosha.vo.GoodsVo;
 
 import javax.servlet.http.HttpServletRequest;
@@ -68,9 +70,9 @@ public class GoodsController {
         return html;
     }
 
-    @GetMapping(value = "/to_detail/{goodsId}", produces = "text/html")
+    @GetMapping(value = "/to_detail2/{goodsId}", produces = "text/html")
     @ResponseBody
-    public String detail(HttpServletRequest request, HttpServletResponse response, Model model, MiaoShaUser user, @PathVariable("goodsId") long goodsId) {
+    public String detail2(HttpServletRequest request, HttpServletResponse response, Model model, MiaoShaUser user, @PathVariable("goodsId") long goodsId) {
         model.addAttribute("user", user);
 
         // 取缓存
@@ -116,5 +118,48 @@ public class GoodsController {
             redisUtil.setObj(GoodsKey.getGoodsDetail, ""+goodsId, html);
         }
         return html;
+    }
+
+    /**
+     * 商品详情
+     * 页面静态化测试
+     * @param user
+     * @param goodsId
+     * @return
+     */
+    @GetMapping(value = "/detail/{goodsId}")
+    @ResponseBody
+    public ResponseModel<GoodsDetailVo> detail( MiaoShaUser user, @PathVariable("goodsId") long goodsId) {
+
+        GoodsVo goods = goodsService.getGoodsVoByGoodsId(goodsId);
+
+        // 秒杀时间
+        long startAt = goods.getStartDate().toInstant().getEpochSecond();
+        long endAt = goods.getEndDate().toInstant().getEpochSecond();
+        // 秒级时间戳 北京时间比UTC时间晚8小时
+        long now = Instant.now().getEpochSecond();
+
+        int miaoShaStatus = 0;
+        int remainSeconds = 0;
+
+        if (now < startAt) {
+            // 秒杀未开始，倒计时
+            miaoShaStatus = 0;
+            remainSeconds = (int) (startAt - now);
+        } else if (now > endAt) {
+            // 秒杀已结束
+            miaoShaStatus = 2;
+            remainSeconds = -1;
+        } else {
+            // 秒杀进行中
+            miaoShaStatus = 1;
+            remainSeconds = 0;
+        }
+        GoodsDetailVo vo = new GoodsDetailVo();
+        vo.setUser(user);
+        vo.setGoods(goods);
+        vo.setMiaoShaStatus(miaoShaStatus);
+        vo.setRemainSeconds(remainSeconds);
+        return ResponseModel.createBySuccess(vo);
     }
 }
