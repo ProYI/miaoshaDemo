@@ -42,10 +42,12 @@
                 <span id="miaoshaTip"></span>
             </td>
             <td>
-                <form id="miaoshaForm" method="post" action="/api/v1/miaosha/do_miaosha">
-                    <button class="btn btn-primary btn-block" type="submit" id="buyButton">立即秒杀</button>
-                    <input type="hidden" name="goodsId" id="goodsId" />
-                </form>
+                <!--<form id="miaoshaForm" method="post" action="/api/v1/miaosha/do_miaosha">-->
+                    <!--<button class="btn btn-primary btn-block" type="submit" id="buyButton">立即秒杀</button>-->
+                    <!--<input type="hidden" name="goodsId" id="goodsId" />-->
+                <!--</form>-->
+                <button class="btn btn-primary btn-block" type="button" id="buyButton" onclick="doMiaoSha()">立即秒杀</button>
+                <input type="hidden" name="goodsId" id="goodsId" />
             </td>
         </tr>
         <tr>
@@ -64,6 +66,26 @@
 </div>
 </body>
 <script>
+
+    function doMiaoSha() {
+        $.ajax({
+            url:"/api/v1/miaosha/do_miaosha",
+            type:"POST",
+            data: {
+                goodsId: $("#goodsId").val(),
+
+            },
+            success:function (data) {
+                if (data.code == 200) {
+                    window.location.href="";
+                }
+            },
+            error:function () {
+                layer.msg("客户端请求有误");
+            }
+        });
+    }
+
     $(function(){
         getDetail()
     });
