@@ -15,9 +15,10 @@ public class MiaoShaGoodsServiceImpl extends ServiceImpl<IMiaoShaGoodsMapper, Mi
     IMiaoShaGoodsMapper miaoShaGoodsMapper;
 
     @Override
-    public void reduceStock(GoodsVo goods) {
+    public boolean reduceStock(GoodsVo goods) {
         MiaoShaGoods g = new MiaoShaGoods();
         g.setGoodsId(goods.getId());
-        miaoShaGoodsMapper.reduceStock(g);
+        int ret = miaoShaGoodsMapper.reduceStock(g);
+        return ret>0;
     }
 }

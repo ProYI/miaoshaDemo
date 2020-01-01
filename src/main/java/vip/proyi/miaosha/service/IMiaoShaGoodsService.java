@@ -5,5 +5,5 @@ import vip.proyi.miaosha.entity.MiaoShaGoods;
 import vip.proyi.miaosha.vo.GoodsVo;
 
 public interface IMiaoShaGoodsService extends IService<MiaoShaGoods> {
-    void reduceStock(GoodsVo goods);
+    boolean reduceStock(GoodsVo goods);
 }

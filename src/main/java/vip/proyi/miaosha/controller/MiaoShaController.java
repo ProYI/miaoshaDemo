@@ -6,10 +6,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import vip.proyi.miaosha.base.ResponseCode;
 import vip.proyi.miaosha.base.ResponseModel;
 import vip.proyi.miaosha.comment.GoodsKey;
@@ -23,6 +20,7 @@ import vip.proyi.miaosha.utils.RedisUtil;
 import vip.proyi.miaosha.vo.GoodsVo;
 import vip.proyi.miaosha.vo.MiaoShaMessage;
 
+import java.util.HashMap;
 import java.util.List;
 
 @RequestMapping("/miaosha")
@@ -54,6 +52,8 @@ public class MiaoShaController implements InitializingBean {
 
     }
 
+    private HashMap<Long, Boolean> localOverMap =  new HashMap<Long, Boolean>();
+
     @PostMapping("/do_miaosha")
     @ResponseBody
     public ResponseModel<Integer> doMiaoSha(Model model, MiaoShaUser user, @RequestParam("goodsId") long goodsId) {
@@ -83,10 +83,16 @@ public class MiaoShaController implements InitializingBean {
         OrderInfo orderInfo = miaoShaService.miaoSha(user, goods);
         return ResponseModel.createBySuccess(orderInfo);*/
 
+        // 内存标记，减少redis访问
+        boolean over = localOverMap.get(goodsId);
+        if (over) {
+            return ResponseModel.createByFAILEDCodeMessage(ResponseCode.MIAOSHA_STOCK_OVER.getCode(), ResponseCode.MIAOSHA_STOCK_OVER.getDesc());
+        }
 
         //预减库存
         long stock = redisUtil.decrObj(GoodsKey.getMiaoshaGoodsStock, ""+goodsId);
         if (stock < 0) {
+            localOverMap.put(goodsId, true);
             return ResponseModel.createByFAILEDCodeMessage(ResponseCode.MIAOSHA_STOCK_OVER.getCode(), ResponseCode.MIAOSHA_STOCK_OVER.getDesc());
         }
         // 判断是否已经秒杀到了
@@ -102,5 +108,26 @@ public class MiaoShaController implements InitializingBean {
         message.setGoodsId(goodsId);
         rabbitTemplate.convertAndSend(MQConstant.MIAOSHA_EXCHANGE, MQConstant.MIAOSHA_ROUNTINGKEY, message);
         return ResponseModel.createBySuccess(0); // 0 代表排队中
+    }
+
+    /**
+     * 获取秒杀结果
+     *
+     * @param model
+     * @param user
+     * @param goodsId
+     * @return orderId 表示成功
+     * @return -1 秒杀失败
+     * @return 0 排队中
+     */
+    @GetMapping("/result")
+    @ResponseBody
+    public ResponseModel<Long> miaoShaResult(Model model, MiaoShaUser user, @RequestParam("goodsId") long goodsId) {
+        model.addAttribute("user", user);
+        if (null == user) {
+            return ResponseModel.createByFAILEDCodeMessage(ResponseCode.SESSION_ERROR.getCode(), ResponseCode.SESSION_ERROR.getDesc());
+        }
+        long result = miaoShaOrderService.getMiaoShaResult(user.getId(), goodsId);
+        return ResponseModel.createBySuccess(result);
     }
 }

@@ -8,5 +8,5 @@ import vip.proyi.miaosha.entity.MiaoShaGoods;
 @Mapper
 public interface IMiaoShaGoodsMapper extends BaseMapper<MiaoShaGoods> {
     @Update("update miaosha_goods set stock_count = stock_count-1 where goods_id = #{goodsId}")
-    void reduceStock(MiaoShaGoods g);
+    int reduceStock(MiaoShaGoods g);
 }
